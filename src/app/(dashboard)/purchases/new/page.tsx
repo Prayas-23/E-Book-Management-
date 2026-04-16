@@ -52,7 +52,7 @@ export default function NewPurchasePage() {
   const removeItem = (index: number) => setItems(items.filter((_, i) => i !== index));
   const updateItem = (index: number, field: keyof LineItem, value: string | number) => {
     const updated = [...items];
-    (updated[index] as Record<string, string | number>)[field] = value;
+    updated[index] = { ...updated[index], [field]: value };
     setItems(updated);
   };
 

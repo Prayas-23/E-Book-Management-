@@ -9,9 +9,12 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getDashboardStats, getRecentActivity } from "@/actions/report-actions";
 import { DashboardClient } from "./dashboard-client";
+import type { DashboardStats } from "@/types";
 
 export default async function DashboardPage() {
-  let stats, recentActivity, userRole = "user";
+  let stats: DashboardStats;
+  let recentActivity: Awaited<ReturnType<typeof getRecentActivity>>;
+  let userRole = "user";
 
   try {
     const session = await auth.api.getSession({ headers: await headers() });

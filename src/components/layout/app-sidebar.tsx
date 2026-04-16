@@ -1,5 +1,15 @@
 "use client";
 
+// ============================================================
+// AppSidebar — Built entirely with shadcn/ui Sidebar primitives
+// ============================================================
+// Uses SidebarProvider context (useState internally).
+// SidebarTrigger in the navbar acts as the hamburger toggle.
+// collapsible="offcanvas":
+//   • Desktop → slides in/out, main content shifts via SidebarInset
+//   • Mobile  → renders as a Sheet (overlay drawer)
+// ============================================================
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
@@ -55,16 +65,16 @@ interface AppSidebarProps {
 }
 
 const navItems = [
-  { title: "Dashboard", href: "/", icon: LayoutDashboard, adminOnly: false, userOnly: false },
-  { title: "Books", href: "/books", icon: BookOpen, adminOnly: false, userOnly: false },
-  { title: "My Books", href: "/my-books", icon: BookMarked, adminOnly: false, userOnly: true },
-  { title: "Members", href: "/members", icon: Users, adminOnly: true, userOnly: false },
-  { title: "Registrations", href: "/registrations", icon: ClipboardCheck, adminOnly: true, userOnly: false },
-  { title: "Transactions", href: "/transactions", icon: ArrowLeftRight, adminOnly: false, userOnly: false },
-  { title: "Purchases", href: "/purchases", icon: ShoppingCart, adminOnly: true, userOnly: false },
-  { title: "Reports", href: "/reports", icon: BarChart3, adminOnly: true, userOnly: false },
-  { title: "Notifications", href: "/notifications", icon: Bell, adminOnly: false, userOnly: false },
-  { title: "Settings", href: "/settings", icon: Settings, adminOnly: false, userOnly: false },
+  { title: "Dashboard",     href: "/",              icon: LayoutDashboard, adminOnly: false, userOnly: false },
+  { title: "Books",         href: "/books",         icon: BookOpen,        adminOnly: false, userOnly: false },
+  { title: "My Books",      href: "/my-books",      icon: BookMarked,      adminOnly: false, userOnly: true  },
+  { title: "Members",       href: "/members",       icon: Users,           adminOnly: true,  userOnly: false },
+  { title: "Registrations", href: "/registrations", icon: ClipboardCheck,  adminOnly: true,  userOnly: false },
+  { title: "Transactions",  href: "/transactions",  icon: ArrowLeftRight,  adminOnly: false, userOnly: false },
+  { title: "Purchases",     href: "/purchases",     icon: ShoppingCart,    adminOnly: true,  userOnly: false },
+  { title: "Reports",       href: "/reports",       icon: BarChart3,       adminOnly: true,  userOnly: false },
+  { title: "Notifications", href: "/notifications", icon: Bell,            adminOnly: false, userOnly: false },
+  { title: "Settings",      href: "/settings",      icon: Settings,        adminOnly: false, userOnly: false },
 ];
 
 export function AppSidebar({ user }: AppSidebarProps) {
@@ -84,14 +94,12 @@ export function AppSidebar({ user }: AppSidebarProps) {
 
   useEffect(() => {
     fetchPendingCount();
-    const interval = setInterval(fetchPendingCount, 30000);
+    const interval = setInterval(fetchPendingCount, 30_000);
     return () => clearInterval(interval);
   }, [fetchPendingCount]);
 
   const filteredItems = navItems.filter((item) => {
-    // Admin sees everything except userOnly items
     if (user.role === "admin") return !item.userOnly;
-    // User sees non-adminOnly items
     return !item.adminOnly;
   });
 
@@ -105,14 +113,18 @@ export function AppSidebar({ user }: AppSidebarProps) {
   };
 
   return (
-    <Sidebar collapsible="icon">
-      {/* Header with logo */}
+    // collapsible="offcanvas":
+    //   - Desktop: sidebar slides in/out (translate-x), content shifts via SidebarInset gap div
+    //   - Mobile:  renders inside a shadcn Sheet (overlay) with dark backdrop
+    <Sidebar collapsible="offcanvas">
+
+      {/* ── Logo / Brand ──────────────────────────────────────── */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-none bg-primary text-primary-foreground">
+                <div className="flex aspect-square size-8 items-center justify-center bg-primary text-primary-foreground">
                   <Library className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -125,7 +137,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarHeader>
 
-      {/* Navigation */}
+      {/* ── Navigation links ──────────────────────────────────── */}
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Navigation</SidebarGroupLabel>
@@ -150,7 +162,8 @@ export function AppSidebar({ user }: AppSidebarProps) {
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
-                    {/* Show pending count badge on Registrations */}
+
+                    {/* Pending count badge on Registrations */}
                     {item.href === "/registrations" && pendingCount > 0 && (
                       <SidebarMenuBadge className="bg-destructive text-destructive-foreground text-[10px]">
                         {pendingCount}
@@ -164,7 +177,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* Footer with user menu */}
+      {/* ── User footer / sign-out ────────────────────────────── */}
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -175,7 +188,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                   className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                 >
                   <Avatar className="h-8 w-8 rounded-none">
-                    <AvatarFallback className="rounded-none bg-primary/10 text-primary text-xs">
+                    <AvatarFallback className="rounded-none bg-primary/10 text-primary text-xs font-semibold">
                       {initials}
                     </AvatarFallback>
                   </Avatar>
@@ -186,6 +199,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                   <ChevronsUpDown className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56"
                 side="bottom"
@@ -195,7 +209,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
                 <DropdownMenuLabel className="p-0 font-normal">
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-none">
-                      <AvatarFallback className="rounded-none bg-primary/10 text-primary text-xs">
+                      <AvatarFallback className="rounded-none bg-primary/10 text-primary text-xs font-semibold">
                         {initials}
                       </AvatarFallback>
                     </Avatar>
@@ -216,7 +230,10 @@ export function AppSidebar({ user }: AppSidebarProps) {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
+                <DropdownMenuItem
+                  onClick={handleSignOut}
+                  className="text-destructive focus:text-destructive"
+                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Sign out
                 </DropdownMenuItem>
@@ -226,6 +243,7 @@ export function AppSidebar({ user }: AppSidebarProps) {
         </SidebarMenu>
       </SidebarFooter>
 
+      {/* Drag-handle rail (desktop) */}
       <SidebarRail />
     </Sidebar>
   );

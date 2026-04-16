@@ -82,11 +82,9 @@ export const auth = betterAuth({
             throw new Error("User not found");
           }
           
-          // @ts-expect-error - approvalStatus is a custom field added to the schema
           if (user.approvalStatus === "PENDING") {
             throw new Error("Your account is pending admin approval. Please wait.");
           }
-          // @ts-expect-error - approvalStatus is a custom field added to the schema
           if (user.approvalStatus === "REJECTED") {
             throw new Error("Your registration has been rejected. Contact the librarian.");
           }
