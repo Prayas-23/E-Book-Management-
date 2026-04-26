@@ -1,8 +1,8 @@
 // ============================================================
 // Prisma Schema — Library Management System
 // ============================================================
-// Provider: SQLite (local file — prisma/dev.db)
-// Use `npx prisma migrate dev` to apply schema changes.
+// Provider: PostgreSQL (Neon cloud — set DATABASE_URL in .env)
+// Use `npx prisma db push` to apply schema changes.
 // ============================================================
 
 generator client {
@@ -10,7 +10,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
